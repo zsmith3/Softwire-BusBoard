@@ -1,12 +1,8 @@
 import * as readlineSync from "readline-sync";
 
-import {Arrival, getArrivals} from "./api";
+import {displayArrivalsNearPostcode,} from "./tfl_display";
 
 
-const stopId = readlineSync.question("Enter stop ID: ");
+const postcode = readlineSync.question("Enter postcode: ");
 
-getArrivals(stopId).then(arrivals => {
-    arrivals.slice(0, 5).forEach(bus => {
-        console.log(`Line: ${bus.lineName}, Destination: ${bus.destinationName}, Time left: ${Math.round(bus.timeToStation / 60)} min(s)`);
-    });
-});
+displayArrivalsNearPostcode(postcode);
