@@ -24,7 +24,7 @@ export async function arrivalsNearPostcodeToJson(postcode: string) {
             arrivals: stop.arrivals.map(arrival => ({
                 line: arrival.lineName,
                 destination: arrival.destinationName,
-                eta: arrival.timeToStation
+                eta: Math.round(arrival.timeToStation / 60)
             }))
         }));
     } else {

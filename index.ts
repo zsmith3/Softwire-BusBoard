@@ -26,6 +26,8 @@ app.get("/departureBoards", (request, response) => {
         })
 });
 
+app.use("/frontend", express.static("frontend"));
+
 app.listen(port, () => {
     console.log(`Example app listening at http://localhost:${port}`)
 });
