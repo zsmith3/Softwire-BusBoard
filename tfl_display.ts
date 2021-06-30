@@ -1,7 +1,7 @@
 import {Arrival, arrivalsNearPostcode, StopPoint} from "./tfl_api";
 
 
-function displayStopArrivals(data: {stop: StopPoint, arrivals: Arrival[]}) {
+function printStopArrivals(data: {stop: StopPoint, arrivals: Arrival[]}) {
     console.log("Stop: " + data.stop.commonName);
     console.log("Arrivals:")
     data.arrivals.slice(0, 5).forEach(bus => {
@@ -10,8 +10,24 @@ function displayStopArrivals(data: {stop: StopPoint, arrivals: Arrival[]}) {
     console.log();
 }
 
-export function displayArrivalsNearPostcode(postcode: string) {
+export function printArrivalsNearPostcode(postcode: string) {
     arrivalsNearPostcode(postcode).then(stops => {
-        stops.forEach(stop => displayStopArrivals(stop));
+        stops.forEach(stop => printStopArrivals(stop));
     });
+}
+
+export async function arrivalsNearPostcodeToJson(postcode: string) {
+    const stops = await arrivalsNearPostcode(postcode);
+    if (stops.length) {
+        return stops.slice(0, 2).map(stop => ({
+            stop: stop.stop.commonName,
+            arrivals: stop.arrivals.map(arrival => ({
+                line: arrival.lineName,
+                destination: arrival.destinationName,
+                eta: arrival.timeToStation
+            }))
+        }));
+    } else {
+        throw {name: "UserError", message: "No stops found near postcode", status: 404};
+    }
 }

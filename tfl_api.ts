@@ -16,15 +16,22 @@ export interface StopPoint {
     commonName: string;
 }
 
+async function tflRequest(url: string) {
+    try {
+        return await axios.get(url + `&app_key=${appKey}`);
+    } catch (error) {
+        throw `TFL error: ${error.response.data.message} at URL: ${url}`;
+    }
+}
 
 export async function stopPointsWithinRadius(latLon: LatLon, radius: number): Promise<StopPoint[]> {
-    const response = await axios.get(`https://api.tfl.gov.uk/StopPoint?stopTypes=NaptanPublicBusCoachTram&modes=bus&lat=${latLon.lat}&lon=${latLon.lon}&radius=${radius}&app_key=${appKey}`);
+    const response = await tflRequest(`https://api.tfl.gov.uk/StopPoint?stopTypes=NaptanPublicBusCoachTram&modes=bus&lat=${latLon.lat}&lon=${latLon.lon}&radius=${radius}`);
     const stopPoints: StopPoint[] = response.data.stopPoints;
     return stopPoints.sort(stopPoint => stopPoint.distance);
 }
 
 export async function getArrivalsAtStop(stopId: string): Promise<Arrival[]> {
-    const response = await axios.get(`https://api.tfl.gov.uk/StopPoint/${stopId}/Arrivals?app_key=${appKey}`);
+    const response = await tflRequest(`https://api.tfl.gov.uk/StopPoint/${stopId}/Arrivals?`);
     return response.data.sort((a: Arrival, b: Arrival) => a.timeToStation - b.timeToStation);
 }
 
