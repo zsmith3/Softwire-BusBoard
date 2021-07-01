@@ -27,6 +27,7 @@
   "dependencies": {
     "axios": "^0.21.1",
     "express": "^4.17.1",
-    "readline-sync": "^1.4.10"
+    "readline-sync": "^1.4.10",
+    "ts-replace-all": "^1.0.0"
   }
 }

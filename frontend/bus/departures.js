@@ -1,6 +1,15 @@
+let lastPostcode = null;
+
 function makeRequest(postcode) {
+    console.log("Request: " + postcode);
+
+    if (postcode === null) {
+        if (lastPostcode === null) return;
+        else postcode = lastPostcode;
+    } else lastPostcode = postcode;
+
     const xhttp = new XMLHttpRequest();
-    xhttp.open("GET", `http://localhost:8000/departureBoards?postcode=${postcode}`, true);
+    xhttp.open("GET", `http://localhost:8000/api/departureBoards?postcode=${postcode}`, true);
     xhttp.setRequestHeader("Content-Type", "application/json");
 
     xhttp.onload = function() {
@@ -34,3 +43,5 @@ function makeRequest(postcode) {
 
     xhttp.send();
 }
+
+setInterval(() => makeRequest(null), 30 * 1000);

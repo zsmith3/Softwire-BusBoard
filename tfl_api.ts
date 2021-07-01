@@ -16,6 +16,16 @@ export interface StopPoint {
     commonName: string;
 }
 
+export interface Cab {
+    TradingName: string;
+    BookingsPhoneNumber: string;
+    NumberOfVehicles: number;
+    AddressLine1: string;
+    AddressLine2: string;
+    Postcode: string;
+    Distance: number;
+}
+
 async function tflRequest(url: string) {
     try {
         return await axios.get(url + `&app_key=${appKey}`);
@@ -38,8 +48,19 @@ export async function getArrivalsAtStop(stopId: string): Promise<Arrival[]> {
 export async function arrivalsNearPostcode(postcode: string): Promise<{stop: StopPoint, arrivals: Arrival[]}[]> {
     const latLon = await latLonFromPostcode(postcode);
     const stopPoints = await stopPointsWithinRadius(latLon, 500);
-    return Promise.all(stopPoints.slice(0, 2).map(async stop => ({
+    return Promise.all(stopPoints.map(async stop => ({
         stop: stop,
         arrivals: await getArrivalsAtStop(stop.id)
     })));
+}
+
+export async function cabsNearLatLon(latLon: LatLon): Promise<Cab[]> {
+    const response = await tflRequest(`https://api.tfl.gov.uk/Cabwise/search?lat=${latLon.lat}&lon=${latLon.lon}`);
+    const cabs: Cab[] = response.data.Operators.OperatorList;
+    return cabs.sort((a, b) => a.Distance - b.Distance);
+}
+
+export async function cabsNearPostcode(postcode: string): Promise<Cab[]> {
+    const latLon = await latLonFromPostcode(postcode);
+    return await cabsNearLatLon(latLon);
 }
